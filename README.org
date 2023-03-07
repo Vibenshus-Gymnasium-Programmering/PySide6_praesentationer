@@ -1,0 +1,6 @@
+Dette repo indeholder en række præsentationer omkring *grafiske brugerflader* udviklet i =PySide6/Qt6= ifm. programmeringsundervisningen på Vibenshus Gymnasium.
+Man kan finde de enkelte præsentationer i de forskellige mapper og så vælge org-filen, eller man kan klikke på linkene nedenfor.
+
+Indtil videre er der følgende præsentationer:
+
+- [[./01_Opsaetning_og_de_foerste_programmer/01_Opsaetning_og_de_foerste_programmer.org][01_Opsaetning_og_de_foerste_programmer]]

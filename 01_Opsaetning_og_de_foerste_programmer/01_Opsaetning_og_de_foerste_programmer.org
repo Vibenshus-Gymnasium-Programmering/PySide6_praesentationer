@@ -1,0 +1,356 @@
+#+title: Grafiske brugerflader (GUI)
+#+subtitle: Programmering B
+#+options: toc:nil timestamp:nil ^:{}
+
+* Introduktion
+
+Når det kommer til udvikling af grafiske brugerflader (på engelsk Graphical User Interface - GUI), findes der sådan ikke et bibliotek, som er udviklet direkte i python. Til gengæld findes der et hav *bindings* mellem python og så biblioteker til grafiske brugerflader udviklet i andre programmeringssprog. Et udpluk af disse er:
+
+- [[https://docs.python.org/3/library/tkinter.html][Tkinter]] 
+- [[https://riverbankcomputing.com/software/pyqt/][PyQt]] eller [[https://www.qt.io/qt-for-python][Qt for Python/Pyside]]
+- [[https://kivy.org/][Kivy]]
+- [[https://www.wxpython.org/][wxPython]]
+- [[https://pysimplegui.readthedocs.io/en/latest/][PySimpleGUI]]
+- [[https://pyforms.readthedocs.io/en/v4/][PyForms]]
+
+Tkinter er de facto-biblioteket til udvikling af grafiske brugerflader i python. Dette skyldes, at Tkinter stort set bliver installeret automatisk, når man installerer python selv (det er kun, hvis man anvender GNU/Linux eller lignende, at man skal huske at installere Tkinter separat). Vi kommer dog *ikke* til at anvende Tkinter i undervisningen her. Dette skyldes at udseendet for de programmer, man udvikler i Tkinter, ser meget bedagede ud, samt at der *ikke* er en grafisk applikation til at designe udseendet af ens programmer.
+
+Derfor kommer vi til at anvende *Qt for Python* og kaldet *pyside* (fremover refereres der bare til pyside), som er bindinger mellem det grafiske bibliotek =Qt= (udtales cute), som normalt anvender =c++=. Arkitekturen bag =Qt= og =pyside= er mere avanceret end Tkinter og der findes et program til grafisk udvikling af brugerfladerne kaldet =pyside6-designer=. Med designerprogrammet er det meget hurtigere at udvikle prototyper af grafiske brugerflader!
+
+Før dette =pyside= kan anvendes, skal det dog lige installeres først.
+
+* Installation af =pyside=
+
+Nu til dags kan man installer =pyside= ved hjælp af =pip=. Altså på fuldstændig samme måde, som da I skulle installere =arcade=. Jeg vil foreslå, at I sætter ét virtuelt miljø op til alle jeres projekter, som omhandler udvikling af grafiske brugerflader. Hvis man virkelig vil have styr på, hvad der sker, så skal man have fat i en terminal (git-bash) og gøre følgende:
+
+1. Naviger til ønsket sti
+
+   #+begin_src shell
+   cd sti/til/mappe
+   #+end_src
+   
+   =sti/til/mappe= skal være den korrekte sti til en rigtig mappe. I kan bruge =stifinderen= i windows til at finde den. Det ville være oplagt at navigere hen i den mappe, hvor I i forvejen har programmering.
+
+2. Opret mappe til pyside-projekter
+
+   #+begin_src shell
+   mkdir Pyside6-projekter
+   cd Pyside6-projekter
+   #+end_src
+
+   Her opretter I en ny mappe (Pyside6-projekter) og I går ind i den efterfølgende.
+
+3. Opret virtuelt miljø
+
+   #+begin_src shell
+   python -m venv pyside6_venv
+   #+end_src
+
+   Her oprettes et nyt viruelt miljø i en mappe kaldet =pyside6_venv=. Hvis I både har python 2.7 og python 3 installeret, så skal I måske skrive =python3= i kommandoen.
+
+4. Aktivering af virtuelt miljø
+
+   #+begin_src shell
+   source pyside6_venv/bin/activate
+   #+end_src
+
+   Dette aktiverer jeres virtuelle miljø, så I kan anvende =pip= lige om lidt.
+
+5. Installation af =pyside6=
+
+   #+begin_src shell
+   python -m pip install pyside6
+   #+end_src
+
+   eller bare
+
+   #+begin_src shell
+   pip install pyside6
+   #+end_src
+
+
+Nu skulle I gerne være i stand til at importere og anvende pyside6-biblioteket, hvis I har aktiveret jeres =pyside6_venv=.
+
+** Installation i pycharm
+I kan selvfølgelig også anvende pycharm til at holde styr på jeres virtuelle miljø. Her skal I bare gøre, som da I skulle få =arcade= installeret gennem pycharm. Det håber jeg, at I kan huske. :)
+
+
+* Det første program
+
+Når I har aktiveret jeres nye virtuelle miljø med =pyside6= installeret, kan I skrive følgende kode ind i =pycharm= eller lignende og så køre koden efterfølgende:
+
+#+begin_src python :exports both :results none :eval never-export :comments link :tangle pyside6_foerste_program.py
+from PySide6.QtWidgets import QApplication, QMainWindow
+
+import sys
+
+program = QApplication(sys.argv)
+
+vindue = QMainWindow()
+vindue.setWindowTitle("Mit foerste pyside6-program")
+vindue.show()
+
+program.exec()
+#+end_src
+
+Når I kører programmet, skal I gerne få et vindue frem, som ligner det følgende:
+
+[[./img/pyside6_foerste_program.png]]
+
+Programmet kan ikke noget som helst, men det er den første spæde start. Hvis man vil lave programmet mere spændende, så det smart at oprette nye klasser, som nedarver fra =QMainWindow=.
+
+* Et program med en knap
+Vi kan tage udgangspunkt i forrige program, og så lave vores eget hovedvindue, som nedarver fra =QMainWindow=.
+
+
+#+begin_src python :exports both :results none :eval never-export :comments link :tangle pyside6_program_med_knap.py
+from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton
+
+import sys
+
+# HovedVindue nedarver fra QMainWindow
+class HovedVindue(QMainWindow):
+    def __init__(self):
+        # super() er en reference til den klasse/de klasser, der nedarves fra
+        # Den foelgende linje koerer altsaa initialiseringsmetoden for QMainWindow
+        super().__init__()
+
+        # Her saettes vinduestitlen for HovedVindue
+        self.setWindowTitle("Et program med en knap")
+
+        # Her oprettes en knap. knap er kun tilgaengelig inden for __init__
+        knap = QPushButton("Tryk på mig!")
+
+        # Her saettes knappen til at blive vist i vinduet
+        self.setCentralWidget(knap)
+
+# Resten er det samme som i forrige eksempel
+program = QApplication(sys.argv)
+
+vindue = HovedVindue()
+vindue.show()
+
+program.exec()
+#+end_src
+
+Programmet skulle gerne ligne det følgende.
+
+[[./img/pyside6_program_med_knap.png]]
+
+
+Nu er der en knap, man kan trykke på, men det er så også det. Der sker jo ingenting. For at få noget til at ske skal man anvende =signals= & =slots=.
+
+* Signals & slots
+
+[[./img/2023-02-02_09-04-05_abstract-connections.png]]
+
+Alle klasser, som nedarver fra QObject eller andre klasser, som allerede nedarver fra denne som f.eks. QWidget kan både indeholde =signaler= og =slots=. Et objekt kan udsende et signal, hvis der sker noget interessant med objektet. Signalet kan så senere modtages af et slot i et andet objekt. For alle signaler gælder det, at de hverken ved, om de modtages af andre objekter og alle slots ved ikke, om der er nogle signaler forbundet til dem. I python og pyside6 kan alle funktioner (eller metoder) i ens program anvendes som slot, hvis man forbinder et signal til den.
+
+Man kan forbinde lige så mange signaler til et enkelt slot, som man har lyst til, og man ligeledes sende ét signal til lige så mange slots, som man ønsker.
+
+** Udskrivning til konsolen ved tryk på knap
+Vi genbruger lige programmet fra tidligere, men anvender =signal= og =slot= til at få programmet til at skrive noget ud til konsolen, når man trykker på knappen.
+
+#+begin_src python :exports both :results output :eval never-export :comments link :tangle pyside6_program_med_knap_signal_slot.py
+from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton
+
+import sys
+
+
+class HovedVindue(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        self.setWindowTitle("Et program med en knap")
+
+        knap = QPushButton("Tryk på mig!")
+        # Denne naeste linje er det nye.
+        # clicked er signalet, mens knappen_blev_trykket_paa er slottet
+        knap.clicked.connect(self.knappen_blev_trykket_paa)
+
+        self.setCentralWidget(knap)
+
+    # Denne metode et slot
+    def knappen_blev_trykket_paa(self):
+        print("Du trykkede paa knappen!")
+
+
+program = QApplication(sys.argv)
+
+vindue = HovedVindue()
+vindue.show()
+
+program.exec()
+#+end_src
+
+** Ændring af vinduestitlen
+Når nu man er ved at udvikle grafiske brugerflader, er det nok bedre at undgå at bruge konsolen til skrive outputtet i. Derfor skal vi se på måder at anvende de grafiske elementer til at vise information. Vi starter med et eksempel, hvor vi ændre på vinduestitlen, når vi trykker på knappen fra tidligere.
+
+
+#+begin_src python :exports both :results none :eval never-export :comments link :tangle pyside6_program_vinduestitel_signal_slot.py
+from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton
+
+import sys
+
+from random import choice
+
+vinduestitler = [
+    "Tryk på knappen!",
+    "Suprise!",
+    "Noget gik galt! Hvad har du nu gjort?!",
+    "Poprorogogroramommomerorinongog",
+]
+
+
+class HovedVindue(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        self.setWindowTitle("Tryk på knappen!")
+
+        self.knap = QPushButton("Tryk på mig!")
+        self.knap.clicked.connect(self.aendr_vinduestitlen)
+
+        self.setCentralWidget(self.knap)
+
+    def aendr_vinduestitlen(self):
+        ny_titel = choice(vinduestitler)
+        self.setWindowTitle(ny_titel)
+        if ny_titel == "Noget gik galt! Hvad har du nu gjort?!":
+            self.knap.setDisabled(True)
+
+
+program = QApplication(sys.argv)
+
+vindue = HovedVindue()
+vindue.show()
+
+program.exec()
+#+end_src
+
+- Kør program, tryk på knappen og se hvad der sker.
+- Gennemgå koden og kom op med en forklaring.
+
+
+* Forbind =widgets= direkte med hinanden
+Nogle gange er det muligt at forbinde to eller flere widgets med hinanden uden at skulle bruge en funktion/en metode som =slot=. I Det følgende eksempel forbindes et inputfelt direkte til en etiket (engelsk label). Når man skriver noget tekst i inputfeltet opdateres etikettens tekst med det samme.
+#+begin_src python :exports both :results none :eval never-export :comments link :tangle pyside6_forbind_widgets_direkte.py
+from PySide6.QtWidgets import (
+    QApplication,
+    QMainWindow,
+    QLabel,
+    QLineEdit,
+    QVBoxLayout,
+    QWidget,
+)
+
+import sys
+
+
+class HovedVindue(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Direkte forbindelse")
+        self.label = QLabel()
+
+        self.inputlinje = QLineEdit()
+        self.inputlinje.textChanged.connect(self.label.setText)
+
+        layout = QVBoxLayout()
+        layout.addWidget(self.inputlinje)
+        layout.addWidget(self.label)
+
+        central_widget = QWidget()
+        central_widget.setLayout(layout)
+
+        self.setCentralWidget(central_widget)
+
+
+program = QApplication(sys.argv)
+
+vindue = HovedVindue()
+vindue.show()
+
+program.exec()
+#+end_src
+
+I eksemplet anvendes også =QWidget= og =QVBoxLayout= til at sætte vinduet op. Anvendelsen af layouts kommer vi tilbage til, men først skal vi tale lidt om nogle af de forskellige widgets, som Qt tilbyder.
+
+* Widgets i Qt og PySide6
+
+Det følgende eksempel skulle gerne vise en række forskellige widgets. Kør koden og se, hvad der sker.
+#+begin_src python :exports both :results none :eval never-export :comments link :tangle pyside6_widgetsdemonstration.py
+import sys
+
+from PySide6.QtWidgets import QVBoxLayout, QWidget
+from PySide6.QtWidgets import (
+    QApplication,
+    QCheckBox,
+    QComboBox,
+    QDateEdit,
+    QDateTimeEdit,
+    QDial,
+    QDoubleSpinBox,
+    QFontComboBox,
+    QLabel,
+    QLCDNumber,
+    QLineEdit,
+    QMainWindow,
+    QProgressBar,
+    QPushButton,
+    QRadioButton,
+    QSlider,
+    QSpinBox,
+    QTimeEdit,
+)
+
+
+class HovedVindue(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        self.setWindowTitle("Demonstration af forskellige widgets")
+
+        layout = QVBoxLayout()
+
+        self.widgets = [
+            QCheckBox(),
+            QComboBox(),
+            QDateEdit(),
+            QDateTimeEdit(),
+            QDial(),
+            QDoubleSpinBox(),
+            QFontComboBox(),
+            QLCDNumber(),
+            QLabel(text="Dette er en QLabel"),
+            QLineEdit("Dette er en QLineEdit"),
+            QProgressBar(),
+            QPushButton(text="Dette er en QPushButton"),
+            QRadioButton(),
+            QSlider(),
+            QSpinBox(),
+            QTimeEdit(),
+        ]
+
+        for widget in self.widgets:
+            layout.addWidget(widget)
+
+        central_widget = QWidget()
+        central_widget.setLayout(layout)
+
+        self.setCentralWidget(central_widget)
+
+
+program = QApplication(sys.argv)
+
+vindue = HovedVindue()
+vindue.show()
+
+program.exec()
+#+end_src
+
+I skulle gerne få et vindue a la dette:
+
+[[./img/pyside6_demonstration_af_widgets.png]]
+
+Det er ikke alle widgets man kan skrive på, hvad det er, men hvis I læser koden igennem, skulle I meget gerne være i stand til at se hvilke widgets, der er hvad.
