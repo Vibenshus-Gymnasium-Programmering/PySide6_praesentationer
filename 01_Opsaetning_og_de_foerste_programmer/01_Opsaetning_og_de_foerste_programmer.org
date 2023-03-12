@@ -1,5 +1,5 @@
 #+title: Grafiske brugerflader (GUI)
-#+subtitle: Programmering B
+#+subtitle: Programmering
 #+options: toc:nil timestamp:nil ^:{}
 
 * Introduktion
@@ -17,7 +17,13 @@ Tkinter er de facto-biblioteket til udvikling af grafiske brugerflader i python.
 
 Derfor kommer vi til at anvende *Qt for Python* og kaldet *pyside* (fremover refereres der bare til pyside), som er bindinger mellem det grafiske bibliotek =Qt= (udtales cute), som normalt anvender =c++=. Arkitekturen bag =Qt= og =pyside= er mere avanceret end Tkinter og der findes et program til grafisk udvikling af brugerfladerne kaldet =pyside6-designer=. Med designerprogrammet er det meget hurtigere at udvikle prototyper af grafiske brugerflader!
 
-Før dette =pyside= kan anvendes, skal det dog lige installeres først.
+Som et alternativ til mine præsentationer og den almindelige klasseundervisning kan I også se en 5 timer lang introduktion til GUI-udvikling i ~PySide6~ udgivet af *freecodecamp*.
+
+- Link til video: [[https://youtu.be/Z1N9JzNax2k][Learn Python GUI Development for Desktop - PySide6 and Qt Tutorial]]
+- [[https://www.freecodecamp.org/][Mere om freeCodeCamp]]
+
+  
+Før =pyside= kan anvendes, skal det dog lige installeres først.
 
 * Installation af =pyside=
 
@@ -183,6 +189,14 @@ vindue.show()
 program.exec()
 #+end_src
 
+*** Opgave
+Gennemgå kodestumpen sammen med i grupper af 2 personer. Imens I gør det find da svarene på følgende spørgsmål:
+- Hvilke biblioteker, moduler og klasser bliver der importeret, og hvor anvendes de hver især *første gang*?
+- Hvilke klasser oprettes, og hvilke andre klasser *nedarver* de fra?
+- Hvornår oprettes der *objekter* af (de nævnte) klasser?
+- I koden oprettes et objekt af klassen ~QPushButton~, som kan udsende ~signalet~ /clicked/. Hvilke andre signaler kan ~QPushButton~ udsende? (Google f.eks. =pyside6 QPushButton=)
+- Hvordan opfører programmet sig, hvis I ændre signalet til et af de andre signaler, som I har fundet?
+
 ** Ændring af vinduestitlen
 Når nu man er ved at udvikle grafiske brugerflader, er det nok bedre at undgå at bruge konsolen til skrive outputtet i. Derfor skal vi se på måder at anvende de grafiske elementer til at vise information. Vi starter med et eksempel, hvor vi ændre på vinduestitlen, når vi trykker på knappen fra tidligere.
 
@@ -228,7 +242,8 @@ vindue.show()
 program.exec()
 #+end_src
 
-- Kør program, tryk på knappen og se hvad der sker.
+*** Opgave
+- Kør programmet, tryk på knappen og se, hvad der sker.
 - Gennemgå koden og kom op med en forklaring.
 
 
@@ -353,4 +368,11 @@ I skulle gerne få et vindue a la dette:
 
 [[./img/pyside6_demonstration_af_widgets.png]]
 
-Det er ikke alle widgets man kan skrive på, hvad det er, men hvis I læser koden igennem, skulle I meget gerne være i stand til at se hvilke widgets, der er hvad.
+** Opgave
+- Læs koden igennem og find de forskellige widgets.
+- Slå op, hvad de forskellige widgets typisk kan bruges til. (Google: pyside6 widgetnavn, eller brug dokumentationssiden for pyside6 fra tidligere.)
+
+* Grafisk andengradsligningsløser
+Som jeres første opgave med udvikling af grafiske brugerflader skal I arbejde med udviklingen af en grafisk brugerflade til en andengradsligningsløser.
+
+Find selve opgaven på github classroom: [[https://classroom.github.com/a/R8wEwYRL]]
