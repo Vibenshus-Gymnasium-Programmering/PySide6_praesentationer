@@ -1,0 +1,246 @@
+#+title: Udvikling GUIs vha. QtDesigner
+#+subtitle: Programmering
+#+options: toc:nil timestamp:nil ^:{}
+
+* Introduktion
+
+Denne præsentation omhandler udvikling af grafiske brugerflader gennem brugen af =PySide6= og særligt værktøjet =QtDesigner=. Med =QtDesigner= er det muligt hurtigt at bygge en prototype af en grafisk brugerflade ved hjælp af at trække og slippe forskellige widgets rundt i et grafisk program.
+
+Præsentationen tager udgangspunkt i udviklingen af en prototype til en /trekantsberegner/, som den I nok kender fra wordmat.
+
+
+* Opsætningskrav
+Følgende skal være installeret og aktiveret.
+
+- ~Python 3~
+- ~PyCharm~ eller andet IDE (eller teksteditor)
+- ~pyside6~ installeret og aktiveret i et virtuelt miljø.
+- ~QtDesigner~ (installeres normalt automatisk, når man installere pyside6 vha ~pip~)
+
+
+* Klargøring af projekt
+I =pycharm= kan I oprette en nyt projekt og give projektet et navn. Det kunne jo f.eks. være /Grafisk_trekantsberegner/, hvilket vil give jer en mappe med det tilsvarende navn. Man kan selvfølgelig også oprette denne mappe selv.
+
+I denne mappe kommer I nok til at arbejde med mindst to eller tre filer alt afhængig af, hvor avanceret programarkitekturen ønskes. 
+
+** TODO Model View Control eller Qt's Model View (eller hvad den nu hedder)
+
+* Design af den grafiske brugerflade i =Designer=
+Grafiske brugeflader kan kodes direkte i python, men i dette tilfælde anvendes programmet =Designer=. Som nævnt tidligere installeres =Designer= automatisk, når =pyside6= installeres i et virtuelt miljø. Afhængig af operativsystem kan det dog være mere eller mindre besværligt at køre dette program. På en linuxcomputer kan man i første omgang aktivere det virtuelle miljø, hvori pyside6 er installeret, i et (bash)kommandoprompt og derefter kan man så skrive =pyside6-designer= for at åbne programmet. Tilsvarende kan gøres i =terminalen= i =pycharm=. Find terminalen nederst i =pycharm= og undersøg om =pyside6-designer &= kan køres herfra.
+
+Når =Designer= er oppe at køre, skulle I gerne få et vindue frem, som ligner det følgende.
+
+#+attr_html: :width 100%
+[[./img/Designer_first_window.png]]
+
+
+*Her skal I vælge et =Main Window=.*
+
+Nu er turen kommet til at designe selve brugerfladen.
+
+** Ønskede elementer
+Der er en række =widgets=, som er vigtige, når man skal designe en brugerflade. Vi kommer til at anvende følgende:
+
+- =QGridLayout= :: Til at holde styr på ande =widgets= i et gitter.
+- =QLabel= :: Til at skrive tekst på skærmen. Tænk små post it-sedler.
+- =QDoubleSpinBox= :: Til at indtaste værdierne for vinklerne og længderne.
+- =QTextEdit= :: Kan bruges som alternativ til =QDoubleSpinBox=, hvis man sørger for ordentlig konvertering af strenge til floats.
+- =QPushBotton= :: Der skal gerne være en knap, man skal trykke på, når beregningerne skal udføres.
+- =QTextBrowser= :: Skal bruges som tekstfelt, hvor beregninger eller kommentarer kan skrives til brugeren.
+
+
+Disse elementer kan findes i =widget Box'en= ude i venstre side. Man kan også filtere efter dem, hvis det bliver uoverskueligt at finde dem hver især.
+
+** Selve designet
+Følgende er mit bud på en prototype:
+
+#+attr_html: :width 100%
+[[./img/Design_af_brugerfladen.png]]
+
+
+Udviklingen har nogenlunde været følgende:
+
+1. Trak et =Grid Layout= fra venstre over i selve vinduet.
+2. Højreklikkede på vinduet og valgte =Lay out -> Lay Out Vertically=.
+3. Trak =Label='s ind fra venstre, som viser /Vinkler:/ og /Sidelængder:/. Selve teksten kan man ændre, hvis man dobbeltklikker på selve labelen.
+
+   Når man trækker widgets ind i grid layoutet kan man se, hvordan de bliver placeret i forhold til hinanden. Griddet bliver udvidet i takt med, at man indsætter flere widgets. De forskellige widgets kan man efterfølgende flytte rundt på og/eller lade udvides over flere pladser i griddet. *Leg lidt med det!*
+4. Trak =Label='s og =Double Spin Box='s ind for vinklerne og sidelængderne, og ændrede teksten på de forskellige labels.
+5. Trak en =Push Button= ind, og skrev /Beregn/ i selve teksten.
+6. Nyt label til at skrive /Output:/ i.
+7. Trak en =Text Browser= ind, hvori output til brugeren kan skrives.
+8. *VIGTIGT*: Omskrev de fleste =objektnavne= oppe i højre hjørne til mere passende værdier. Se selv, hvilke navne jeg har anvendt. I kan bruge de samme, eller selv finde på nogle bedre. Passende variabelnavne er guld hver, når der skal skrives kode efterfølgende.
+9. Satte double spinboxene fra vinklerne til at kunne gå fra 0.0 til 180.0 og for sidelængderne fra 0.0 til et meget højt tal. Dette kan gøres under =property= i højre side, når et eller flere af de ønskede widgets er markeret.
+10. Gemte =ui=-filen under et passende navn (=Grafisk_trekantsberegner_GUI.ui=).
+11. Derudover blev der leget lidt med minimums- og maksimumsstørrelserne for de forskellige widgets og deres ekspansionspolitikker. Det har dog kun kosmetisk betydning.
+
+
+*Prøv at skabe noget lignende selv. Husk at gemme =ui=-filen i jeres projektmappe.*
+
+* Kodning af brugerflade
+Nu er det tid til at faktisk at kode noget, så vi får et pythonprogram. Vend derfor tilbage til =pycharm= (eller hvad I nu har valgt af IDE/editor). Der findes to forskellige mådet at få sat jeres grafiske brugerflade op på i =pyside6=. Enten /direkte indlæsning af jeres designfil (.ui)/ eller /konvertering af jeres designfil til en pythonfil/. Der er fordele og ulemper ved begge metoder. Min favoritmetode er at konvertere til pythonfil, men I skal nok få præsenteret begge metoder.
+
+** Direkte indlæsning af designfil
+Lad os antage, at vi har en designfil liggende, som hedder =Grafisk_trekantsberegner_GUI.ui=, og at vi opretter en ny pythonfil, som hedder =Grafisk_trekantsberegner.py=. Indholdet af sidstnævnte kan da være følgende:
+
+#+begin_src python -n :exports both :results output :eval never-export :comments link :tangle Grafisk_trekantsberegner.py
+# Grafisk_trekantsberegner.py
+import sys
+
+from PySide6.QtWidgets import QApplication
+# QUiLoader skal bruges til at loade ui-filen
+from PySide6.QtUiTools import QUiLoader
+
+# Læg mærke tile at QMainWindow ikke importeres.
+# I stedet importeres QObject i stedet for.
+# QMainWindow er anvendt i Designer.
+from PySide6.QtCore import QObject
+
+
+# loader-objekt som bruges til at loade .ui-filen
+loader = QUiLoader()
+
+
+class Trekantsberegner(QObject):
+    def __init__(self):
+        super().__init__()
+        # Brugerfladen kan tilgås gennem self.ui
+        self.ui = loader.load("Grafisk_trekantsberegner_GUI.ui", None)
+        self.ui.beregnknap.clicked.connect(self.beregn)
+        # Skal bruges til at gemme værdierne for vinklerne og sidelængderne
+        self.trekantsvaerdier = {}
+
+    def beregn(self):
+        # Her er et eksempel, som skal vise, hvordan værdier kan gemmes
+        # I skal bruge funktionen beregn til noget andet end dette eksempel
+        # Gemmer alle vinkler og længder i et dictionary
+        for noegle, stoerrelse in zip(["A", "B", "C", "a", "b", "c"],[self.ui.vinkel_A, self.ui.vinkel_B, self.ui.vinkel_C, self.ui.side_a, self.ui.side_b, self.ui.side_c]):
+            self.trekantsvaerdier[noegle] = stoerrelse.value()
+
+        # Alternativ til for-løkken. Hvis der er mange værdier, der skal gemmes,
+        # kan det hurtigt fylde for mange linjer.
+        # self.trekantsvaerdier["A"] = self.ui.vinkel_A.value()
+        # self.trekantsvaerdier["B"] = self.ui.vinkel_B.value()
+        # self.trekantsvaerdier["C"] = self.ui.vinkel_C.value()
+        # self.trekantsvaerdier["a"] = self.ui.side_a.value()
+        # self.trekantsvaerdier["b"] = self.ui.side_b.value()
+        # self.trekantsvaerdier["c"] = self.ui.side_c.value()
+
+        # Sletter indholdet i outputfeltet
+        self.ui.outputfelt.clear()
+        # Skriver følgende til outputfeltet
+        self.ui.outputfelt.append("Følgende værdier er gemt.")
+        # Udprinter alle værdierne for indtastede vinkler og sider
+        for navn, vaerdi in self.trekantsvaerdier.items():
+                self.ui.outputfelt.append(f"{navn} = {vaerdi}")
+
+
+program = QApplication.instance()
+if program == None:
+    program = QApplication(sys.argv)
+trekantsberegner = Trekantsberegner()
+trekantsberegner.ui.show()
+program.exec()
+#+end_src
+
+- Fordelen :: ved denne måde at opbygge sit program er, at brugerfladen opdateres automatisk, når/hvis I laver ændringer i brugerfladen gennem ~designer~. I skal bare sørge for at køre python-programmet igen. 
+
+- Ulempen :: er så til gengæld, at ~pycharm~ eller andre editorer ikke kan /autocomplete/ navne, objekter, metoder osv for de forskellige widgets i brugerfladen. F.eks. ville man *ikke* kunne skrive ~self.ui.~ og så få forslag til de forskellige widgets. I stedet bliver man nødt til at have ~designer~ åbent og så slå navnene op derigennem.
+
+** Fra ui-fil til pythonfil
+
+Denne anden metode, som er min foretrukne, går ud på at konvertere =ui=-filen til en =python=-fil. Dette kan gøres ved hjælp af kommandoen =pyside6-uic=, som man også har adgang til fra en terminal, når man har aktiveret det virtuelle miljø, som indeholder =PySide6=. I =pycharm= kan man gøre følgende:
+
+1. Tryk på fanen =Terminal= i den nederste bjælke.
+2. I terminalen skriver I nu f.eks. =pyside6-uic Grafisk_trekantsberegner_GUI.ui > Grafisk_trekantsberegner_GUI.py=
+3. Hver gang I laver ændringer i den grafiske brugerflade gennem =Designer=, skal I huske at køre ovenstående kommando.
+
+
+Følgende kode er en måde at bygge det grafiske program på, når GUI'en er blevet konverteret til en pythonfil.
+
+#+begin_src python -n :exports both :results output :eval never-export :comments link :tangle Grafisk_trekantsberegner_konvertering_til_python.py
+import sys
+
+# Import af de almindelige elementer i pyside6
+from PySide6.QtWidgets import QApplication, QMainWindow
+# Import af brugerfladen, som netop er konverteret til en pythonfil hva pyside6-uic
+from Grafisk_trekantsberegner_GUI import Ui_TrekantsberegnerVindue
+
+# Vores trekantsberegner starter med at nedarve fra QMainWindow, da det var det,
+# vi valgte, da vi designede vores applikation
+class Trekantsberegner(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        # Her oprettes self.ui ud fra den klasse som er i den genererede pythonfil
+        # altså den samme klasse, som er importeret i starten af denne fil
+        self.ui = Ui_TrekantsberegnerVindue()
+        # Nedenfor sætte selve brugerfladen op. Metoden kan man finde i GUI-pythonfilen.
+        self.ui.setupUi(self)
+
+        # Her sættes signal og slot op for beregn knappen.
+        self.ui.beregnknap.clicked.connect(self.beregn)
+
+        # Skal bruges til at gemme værdierne for vinklerne og sidelængderne
+        self.trekantsvaerdier = {}
+
+    def beregn(self):
+        # Indholdet i denne metode er det samme som i forrige eksempel med indlæsning af ui-filen.
+
+        # Her er et eksempel, som skal vise, hvordan værdier kan gemmes
+        # I skal bruge funktionen beregn til noget andet end dette eksempel
+        # Gemmer alle vinkler og længder i et dictionary
+        for noegle, stoerrelse in zip(["A", "B", "C", "a", "b", "c"],[self.ui.vinkel_A, self.ui.vinkel_B, self.ui.vinkel_C, self.ui.side_a, self.ui.side_b, self.ui.side_c]):
+            self.trekantsvaerdier[noegle] = stoerrelse.value()
+
+        # Alternativ til for-løkken. Hvis der er mange værdier, der skal gemmes,
+        # kan det hurtigt fylde for mange linjer.
+        # self.trekantsvaerdier["A"] = self.ui.vinkel_A.value()
+        # self.trekantsvaerdier["B"] = self.ui.vinkel_B.value()
+        # self.trekantsvaerdier["C"] = self.ui.vinkel_C.value()
+        # self.trekantsvaerdier["a"] = self.ui.side_a.value()
+        # self.trekantsvaerdier["b"] = self.ui.side_b.value()
+        # self.trekantsvaerdier["c"] = self.ui.side_c.value()
+
+        # Sletter indholdet i outputfeltet
+        self.ui.outputfelt.clear()
+        # Skriver følgende til outputfeltet
+        self.ui.outputfelt.append("Følgende værdier er gemt.")
+        # Udprinter alle værdierne for indtastede vinkler og sider
+        for navn, vaerdi in self.trekantsvaerdier.items():
+                self.ui.outputfelt.append(f"{navn} = {vaerdi}")
+
+
+program = QApplication.instance()
+if program == None:
+    program = QApplication(sys.argv)
+trekantsberegner = Trekantsberegner()
+# Læg mærke til at det nu er trekantsberegner, som har metoden show,
+# og ikke trekantsberegner.ui.
+trekantsberegner.show()
+program.exec()
+#+end_src
+
+- Fordelen :: ved denne fremgangsmåde er, at pycharm eller andre udviklingsværktøjer til python vil kunne autocomplete navne, funktioner, metoder osv i takt med at koden skrives. Det gør udviklingen nemmere.
+
+- Ulempen :: er, at man skal huske at køre kommandoen =pyside6-uic Grafisk_Trekantsberegner_GUI.ui > Grafisk_Trekantsberegner_GUI.py= i en terminal hver gang, der er foretaget ændringer i ~Designer~.
+
+
+* Selve logikken bag en trekantsberegner
+Nu er det op til jer at udvikle funktioner og algoritmer, som kan løse trekanter. Hvis jeg var jer, ville jeg starte med at oprette en ny pythonfil, som for det første skal indeholde en række funktioner, som kan returnere vinkler og sidelængder ved hjælp af trigonometri. En opstart kunne se ud som følger:
+
+#+begin_src python -n :exports both :results output :eval never-export :comments link :tangle logik_til_trekantesberegner.py
+import math
+
+def sidelaengde_vha_cosrel(side_1, side_2, vinkel_imellem):
+    """Returnerer sidelængden i en trekant vha cosinusrelationen, hvis man anvender to sidelængder og den mellemliggende vinkel. Vinklen antages at være i grader."""
+    return (side_1**2 + side_2**2 - 2 * side_1 * side_2 * math.cos(math.radians(vinkel_imellem)))**0.5
+
+def sidelaengde_vha_sinrel(side_1, vinkel_1, vinkel_2):
+    """Returnerer sidelængden i en trekant vha sinusrelationen, hvis man anvender en side og dens modstående vinkel, samt en anden kendt vinkel. Den returnerede sidelængde står overfor vinkel_2. Alle vinkler antages at være i grader."""
+    return side_1 * math.sin(math.radians(vinkel_2)) / math.sin(math.radians(vinkel_1)) 
+
+# Her fra må I selv finde på flere funktioner og en eller flere algoritmer, som kan løse en vilkårlig trekant.
+#+end_src
+
+
+God arbejdslyst!

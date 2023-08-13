@@ -4,3 +4,4 @@ Man kan finde de enkelte præsentationer i de forskellige mapper og så vælge o
 Indtil videre er der følgende præsentationer:
 
 - [[./01_Opsaetning_og_de_foerste_programmer/01_Opsaetning_og_de_foerste_programmer.org][01_Opsaetning_og_de_foerste_programmer]]
+- [[./02_QtDesigner/02_QtDesigner.org][02_QtDesigner]]
