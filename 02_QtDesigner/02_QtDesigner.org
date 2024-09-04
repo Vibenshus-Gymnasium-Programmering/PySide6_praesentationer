@@ -23,7 +23,7 @@ I =pycharm= kan I oprette en nyt projekt og give projektet et navn. Det kunne jo
 
 I denne mappe kommer I nok til at arbejde med mindst to eller tre filer alt afhængig af, hvor avanceret programarkitekturen ønskes. 
 
-** TODO Model View Control eller Qt's Model View (eller hvad den nu hedder)
+** TODO Model View Controller eller Qt's Model View (eller hvad den nu hedder)
 
 * Design af den grafiske brugerflade i =Designer=
 Grafiske brugeflader kan kodes direkte i python, men i dette tilfælde anvendes programmet =Designer=. Som nævnt tidligere installeres =Designer= automatisk, når =pyside6= installeres i et virtuelt miljø. Afhængig af operativsystem kan det dog være mere eller mindre besværligt at køre dette program. På en linuxcomputer kan man i første omgang aktivere det virtuelle miljø, hvori pyside6 er installeret, i et (bash)kommandoprompt og derefter kan man så skrive =pyside6-designer= for at åbne programmet. Tilsvarende kan gøres i =terminalen= i =pycharm=. Find terminalen nederst i =pycharm= og undersøg om =pyside6-designer &= kan køres herfra.
@@ -220,9 +220,11 @@ trekantsberegner.show()
 program.exec()
 #+end_src
 
+#+RESULTS:
+
 - Fordelen :: ved denne fremgangsmåde er, at pycharm eller andre udviklingsværktøjer til python vil kunne autocomplete navne, funktioner, metoder osv i takt med at koden skrives. Det gør udviklingen nemmere.
 
-- Ulempen :: er, at man skal huske at køre kommandoen =pyside6-uic Grafisk_Trekantsberegner_GUI.ui > Grafisk_Trekantsberegner_GUI.py= i en terminal hver gang, der er foretaget ændringer i ~Designer~.
+- Ulempen :: er, at man skal huske at køre kommandoen =pyside6-uic Grafisk_Trekantsberegner_GUI.ui -o Grafisk_Trekantsberegner_GUI.py= i en terminal hver gang, der er foretaget ændringer i ~Designer~.
 
 
 * Selve logikken bag en trekantsberegner
